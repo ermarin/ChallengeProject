@@ -1,3 +1,38 @@
+Stack used in this challenged:
+
+Typescript
+
+NodeJs v20.11.0
+
+Npm 10.3.0
+
+React Native 0.73.2
+
+React 18.2.0
+
+React navigation 6.1.9
+
+Android Studio Android Studio Hedgehog | 2023.1.1 Patch 1
+
+
+
+Commands to use:
+
+```bash
+#First...
+npm install
+#...After
+npm start
+```
+
+In other terminal
+
+```bash
+npm run android(previously create Device emulator)
+```
+
+
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
