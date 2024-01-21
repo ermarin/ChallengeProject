@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable quotes */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -11,51 +11,14 @@ import {
   Text,
 } from 'react-native';
 import ItemList from './ItemList';
-import SQLite from 'react-native-sqlite-storage';
-
-const db = SQLite.openDatabase(
-  {
-    name: 'MainBankDB',
-    location: 'default',
-  },
-  () => { },
-  (error: any) => { console.log(error); }
-);
 
 export default function GetDataList({banks}: any) {
   const [banksList, setBanksList] = useState<any>('');
 
   useEffect(() => {
-    if (banks.length > 0) {
-      fetchBanks();
-    } else {
-      fetchData();
+    if(banks?.length > 0) {
+      setBanksList(banks);
     }
-  }, []);
-
-  const fetchBanks = () => {
-    try {
-      db.transaction((tx: any) => {
-        tx.executeSql(
-          `SELECT Age, BankName, Description, Url FROM Banks`,
-          [],
-          (tx: any, results: any) => {
-            const len = results.rows.length;
-            if (len > 0) {
-              setBanksList(results.rows.raw());
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchData = useCallback(async () => {
-    const data = await fetch('https://dev.obtenmas.com/catom/api/challenge/banks');
-    const resp = await data.json();
-    setBanksList(resp);
   }, []);
 
   return (

@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable quotes */
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -11,73 +11,46 @@ import {
   Alert,
 } from 'react-native';
 import CustomButton from '../utils/CustomButton';
-import SQLite from 'react-native-sqlite-storage';
 
-const db: any = SQLite.openDatabase(
-  {
-    name: 'MainDB',
-    location: 'default',
-  },
-  () => { },
-  (error: any) => { console.log(error); }
-);
+import {
+  connectToDatabase,
+  createTable,
+  getTableUser,
+  setTableUser,
+} from '../db/dbUser';
 
 export default function Login({ navigation }: any) {
 
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
 
-  useEffect(() => {
-    createTable();
-    getData();
+  const getData = useCallback(async () => {
+    const db = await connectToDatabase();
+    try {
+      createTable(db);
+      getTableUser(db);
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
-  const createTable = () => {
-    db.transaction((tx: any) => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS `
-        + `Users `
-        + `(ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Age INTEGER);`
-      );
-    });
-  };
-
-  const getData = () => {
-    try {
-      db.transaction((tx: any) => {
-        tx.executeSql(
-          `SELECT Name, Age FROM Users`,
-          [],
-          (tx: any, results: any) => {
-            const len = results.rows.length;
-            if (len > 0) {
-              navigation.navigate('Home');
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const setData = async () => {
+    const db = await connectToDatabase();
     if (name.length === 0 || age.length === 0) {
       Alert.alert('Warning!', 'Please write your data.');
     } else {
       try {
-        await db.transaction(async (tx: any) => {
-          await db.executeSql(
-            `INSERT INTO Users (Name, Age) VALUES (?,?)`,
-            [name, age]
-          );
-        });
+        setTableUser(db, {name: name, age: age});
         navigation.navigate('Home');
       } catch (error) {
         console.log(error);
       }
     }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <View style={styles.body}>
